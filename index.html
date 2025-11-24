@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard Boutique Informatique - Pro</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+</head>
+<body data-page="index" class="">
+
+<header class="site-header-soft">
+  <div class="header-left">
+    <h1><i class="fas fa-store"></i> Boutique Informatique</h1>
+    <p class="subtitle">Dashboard de ventes</p>
+  </div>
+
+  <div class="header-right">
+    <a href="add.html" class="icon-btn-soft" title="Ajouter une vente"><i class="fas fa-plus-circle"></i></a>
+    <a href="sales.html" class="icon-btn-soft" title="Liste complète"><i class="fas fa-table"></i></a>
+
+    <button id="exportPdfBtn" class="icon-btn-soft" title="Exporter PDF"><i class="fas fa-file-pdf"></i></button>
+    <button id="exportExcelBtn" class="icon-btn-soft" title="Exporter Excel"><i class="fas fa-file-excel"></i></button>
+        <div class="theme-toggle">
+  <span class="theme-label">Dark Mode</span>
+  <label class="switch">
+    <input id="themeToggle" type="checkbox">
+    <span class="slider">
+      <span class="slider-ball"></span>
+    </span>
+  </label>
+</div>
+
+  </div>
+</header>
+
+<main class="container grid-stack">
+  <aside class="left-column grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="4" data-gs-height="12">
+    <section class="card-soft import-card" data-aos="fade-up">
+      <div class="card-header">
+        <h3><i class="fas fa-file-import"></i> Importer / Exporter</h3>
+      </div>
+      <div class="card-body">
+        <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" class="input-soft">
+        <div class="import-actions">
+          <button id="importBtn" class="btn-soft"><i class="fas fa-upload"></i> Importer</button>
+          <button id="exportCsvBtn" class="btn-soft"><i class="fas fa-file-csv"></i> Export CSV</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card-soft filters-card" data-aos="fade-up">
+      <div class="card-header">
+        <h3><i class="fas fa-filter"></i> Filtres</h3>
+      </div>
+      <div class="card-body">
+        <label>Période</label>
+        <div class="filter-row">
+          <input id="dateFrom" type="date" class="input-soft">
+          <input id="dateTo" type="date" class="input-soft">
+        </div>
+        <div class="filter-actions">
+          <button id="applyFilterBtn" class="btn-soft"><i class="fas fa-check"></i> Appliquer</button>
+          <button id="resetFilterBtn" class="btn-ghost-soft"><i class="fas fa-undo"></i> Réinitialiser</button>
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <section class="right-column grid-stack-item" data-gs-x="4" data-gs-y="0" data-gs-width="8" data-gs-height="12">
+    <div class="summary-card card-soft" data-aos="fade-up">
+      <h4><i class="fas fa-calendar-day"></i> Résumé du Jour</h4>
+      <p id="dailySales">Ventes aujourd'hui: 0 DT</p>
+      <p id="topProductDay">Top produit: -</p>
+    </div>
+
+    <div class="kpi-row card-soft" data-aos="fade-up">
+      <div class="kpi card-soft">
+        <img src="https://cdn-icons-png.flaticon.com/512/270/270798.png" alt="" class="kpi-img">
+        <div>
+          <p class="kpi-label">CA Total</p>
+          <h2 id="totalRevenue">0 DT</h2>
+        </div>
+      </div>
+
+      <div class="kpi card-soft">
+        <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="" class="kpi-img">
+        <div>
+          <p class="kpi-label">Produit le plus vendu</p>
+          <h3 id="bestProduct">-</h3>
+        </div>
+      </div>
+
+      <div class="kpi card-soft">
+        <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png" alt="" class="kpi-img">
+        <div>
+          <p class="kpi-label">Meilleur vendeur</p>
+          <h3 id="bestSeller">-</h3>
+        </div>
+      </div>
+
+      <div class="kpi card-soft small">
+        <img src="https://cdn-icons-png.flaticon.com/512/992/992651.png" alt="" class="kpi-img">
+        <div>
+          <p class="kpi-label">Ventes totales</p>
+          <h3 id="countSales">0</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-row card-soft" data-aos="fade-up">
+      <div class="chart-card card-soft">
+        <h4><i class="fas fa-chart-line"></i> Évolution CA</h4>
+        <canvas id="lineChart"></canvas>
+      </div>
+
+      <div class="chart-card card-soft">
+        <h4><i class="fas fa-chart-bar"></i> CA par produit</h4>
+        <canvas id="productChart"></canvas>
+      </div>
+
+      <div class="chart-card card-soft">
+        <h4><i class="fas fa-chart-pie"></i> CA par vendeur</h4>
+        <canvas id="sellerChart"></canvas>
+      </div>
+    </div>
+
+    <div class="insights-card card-soft" data-aos="fade-up">
+      <h4><i class="fas fa-brain"></i> Insights IA</h4>
+      <p id="forecast">Prévision des ventes: Chargement...</p>
+      <div id="iaChat">
+        <input id="iaQuery" placeholder="Posez une question sur les ventes..." class="input-soft">
+        <button id="askIA" class="btn-soft"><i class="fas fa-comment-dots"></i> Demander</button>
+        <div id="iaResponse" class="hint" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+
+<script src="script.js"></script>
+<script>
+  AOS.init({ once: true, duration: 700 });
+</script>
+</body>
+</html>
